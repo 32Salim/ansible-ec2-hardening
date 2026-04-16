@@ -1,41 +1,68 @@
 
-# Ansible EC2 Hardening Project
+# 🔐 Ansible EC2 Hardening Project
 
-## Overview
-This project automates the hardening of an Ubuntu EC2 instance using Ansible.
+## 📌 Overview
+This project demonstrates how to automate the security hardening of an Ubuntu EC2 instance using Ansible and AWS dynamic inventory.
 
-## What I did
-- Connected to EC2 using SSH and a bastion host
-- Configured Ansible with AWS dynamic inventory
-- Verified connectivity using Ansible ping module
-- Built a base hardening playbook
-- Disabled root SSH login
-- Configured UFW firewall to allow only SSH
-- Enabled automatic security updates
-- Installed and configured CrowdSec
-- Verified services are running
-- Ensured playbook is idempotent (safe to run multiple times)
+The goal was to build a repeatable, idempotent, and production-style configuration for securing cloud infrastructure.
 
-## Project Structure
-- base-hardening.yml → main playbook
-- inventory/ → AWS dynamic inventory
-- roles/ → modular roles (firewall, updates, crowdsec)
-- ansible.cfg → Ansible configuration
-- hardening-output.txt → execution output
-- final-proof.txt → verified output
+---
 
-## Result
-- Playbook executed successfully
-- No failures or unreachable hosts
-- System hardened with firewall and security tools
-- Automation verified with zero changes on rerun
-
-## Skills Demonstrated
-- Ansible automation
+## ⚙️ Technologies Used
+- Ansible
 - AWS EC2
-- Linux system hardening
-- SSH and key management
-- UFW firewall configuration
-- Security updates automation
-- CrowdSec installation
-- Infrastructure as Code mindset
+- Linux (Ubuntu)
+- UFW Firewall
+- CrowdSec
+- SSH
+- Infrastructure as Code (IaC)
+
+---
+
+## 🚀 What This Project Does
+- Discovers EC2 instances dynamically using AWS inventory
+- Connects securely via SSH
+- Applies baseline security hardening:
+  - Disables root SSH login
+  - Configures UFW firewall (SSH only)
+  - Enables automatic security updates
+  - Installs and runs CrowdSec for intrusion prevention
+- Ensures idempotency (safe to re-run without changes)
+
+---
+
+## 📁 Project Structure
+---
+
+## ✅ Results
+- Playbook executed successfully with:
+  - `failed=0`
+  - `unreachable=0`
+- Second run showed:
+  - `changed=0` → confirms idempotency
+- UFW active and restricting access
+- CrowdSec service running and enabled
+- Root SSH login disabled
+
+---
+
+## 🧠 Key Skills Demonstrated
+- Configuration Management with Ansible
+- Cloud Infrastructure Security (AWS)
+- Dynamic Inventory (aws_ec2 plugin)
+- Linux Hardening
+- Firewall Configuration (UFW)
+- Automated Patch Management
+- Security Tool Integration (CrowdSec)
+- Idempotent Automation Design
+
+---
+
+## 📸 Proof of Execution
+See:
+- `hardening-output.txt`
+- `final-proof.txt`
+---
+
+## 💡 Key Takeaway
+This project shows how infrastructure can be secured automatically and consistently using Infrastructure as Code principles.
