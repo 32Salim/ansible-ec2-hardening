@@ -1,0 +1,84 @@
+---
+- name: Base OS Hardening
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Disable root SSH login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        backup: true
+      notify: Restart SSH
+
+    - name: Install UFW
+      ansible.builtin.apt:
+        name: ufw
+        state: present
+        update_cache: true
+
+    - name: Allow SSH through UFW
+      community.general.ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+
+    - name: Set default incoming policy to deny
+      community.general.ufw:
+        direction: incoming
+        policy: deny
+
+    - name: Set default outgoing policy to allow
+      community.general.ufw:
+        direction: outgoing
+        policy: allow
+
+    - name: Enable UFW
+      community.general.ufw:
+        state: enabled
+
+    - name: Install unattended-upgrades
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: present
+        update_cache: true
+
+    - name: Enable automatic security updates
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Install curl for CrowdSec repository setup
+      ansible.builtin.apt:
+        name: curl
+        state: present
+        update_cache: true
+
+    - name: Add CrowdSec repository
+      ansible.builtin.shell: curl -s https://install.crowdsec.net | sudo sh
+      args:
+        creates: /etc/apt/sources.list.d/crowdsec_crowdsec.list
+
+    - name: Install CrowdSec
+      ansible.builtin.apt:
+        name: crowdsec
+        state: present
+        update_cache: true
+
+    - name: Ensure CrowdSec service is enabled and running
+      ansible.builtin.systemd:
+        name: crowdsec
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: ssh
+        state: restarted

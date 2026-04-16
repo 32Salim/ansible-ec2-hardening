@@ -1,0 +1,45 @@
+
+PLAY [Base OS Hardening with Roles] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [172.31.0.219]
+
+TASK [ssh_hardening : Disable root SSH login] **********************************
+ok: [172.31.0.219]
+
+TASK [firewall : Install UFW] **************************************************
+ok: [172.31.0.219]
+
+TASK [firewall : Allow SSH through UFW] ****************************************
+ok: [172.31.0.219]
+
+TASK [firewall : Set default incoming policy to deny] **************************
+ok: [172.31.0.219]
+
+TASK [firewall : Set default outgoing policy to allow] *************************
+ok: [172.31.0.219]
+
+TASK [firewall : Enable UFW] ***************************************************
+ok: [172.31.0.219]
+
+TASK [updates : Install unattended-upgrades] ***********************************
+ok: [172.31.0.219]
+
+TASK [updates : Enable automatic security updates] *****************************
+ok: [172.31.0.219]
+
+TASK [crowdsec : Install curl for CrowdSec repository setup] *******************
+ok: [172.31.0.219]
+
+TASK [crowdsec : Add CrowdSec repository] **************************************
+ok: [172.31.0.219]
+
+TASK [crowdsec : Install CrowdSec] *********************************************
+ok: [172.31.0.219]
+
+TASK [crowdsec : Ensure CrowdSec service is enabled and running] ***************
+ok: [172.31.0.219]
+
+PLAY RECAP *********************************************************************
+172.31.0.219               : ok=13   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
