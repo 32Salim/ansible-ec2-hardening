@@ -1,0 +1,12 @@
+---
+- name: Base OS Hardening with Roles
+  hosts: all
+  become: true
+
+  roles:
+    - ssh_hardening
+    - firewall
+    - updates
+    - crowdsec
+    - web_server
+    - monitoring 
