@@ -1,0 +1,70 @@
+---
+- name: Install web server and app packages
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - python3
+      - python3-pip
+      - python3-venv
+    state: present
+    update_cache: true
+
+- name: Create application directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+  loop:
+    - /opt/flaskapp
+    - /opt/flaskapp/app
+
+- name: Create Python virtual environment
+  ansible.builtin.command:
+    cmd: python3 -m venv /opt/flaskapp/venv
+    creates: /opt/flaskapp/venv/bin/activate
+
+- name: Install Flask and Gunicorn in virtual environment
+  ansible.builtin.pip:
+    name:
+      - flask
+      - gunicorn
+    virtualenv: /opt/flaskapp/venv
+- name: Copy Flask app source code
+  ansible.builtin.copy:
+    src: app.py
+    dest: /opt/flaskapp/app/app.py
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start Flask app service
+  ansible.builtin.systemd:
+    name: flaskapp
+    enabled: true
+    state: started
+- name: Deploy Nginx virtual host config
+  ansible.builtin.template:
+    src: flaskapp_nginx.conf.j2
+    dest: /etc/nginx/sites-available/flaskapp
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Nginx
+
+- name: Enable Flask app Nginx site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/flaskapp
+    dest: /etc/nginx/sites-enabled/flaskapp
+    state: link
+  notify: Restart Nginx
+
+- name: Remove default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx
