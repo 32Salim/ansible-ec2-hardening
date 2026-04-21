@@ -1,4 +1,14 @@
 ---
+- hosts: all
+  become: yes
+  vars_files:
+    - group_vars/all/vault.yml
+
+  tasks:
+    - name: Test vault variable
+      debug:
+        msg: "DB password is {{ db_password }}"
+
 - name: Base OS Hardening with Roles
   hosts: all
   become: true
@@ -9,4 +19,4 @@
     - updates
     - crowdsec
     - web_server
-    - monitoring 
+    - monitoring
