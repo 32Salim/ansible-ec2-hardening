@@ -1,0 +1,34 @@
+name: Deploy Ansible from Bastion
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.BASTION_SSH_KEY }}" > ~/.ssh/bastion_key
+          chmod 600 ~/.ssh/bastion_key
+
+      - name: Add bastion to known_hosts
+        run: |
+          ssh-keyscan -H "${{ secrets.BASTION_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy on bastion
+        run: |
+          ssh -i ~/.ssh/bastion_key "${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}" << 'EOF'
+            set -e
+            cd ~/ansible-project
+            git pull origin main
+            ansible-playbook site.yml --limit 'role_web:&env_prod'
+          EOF
