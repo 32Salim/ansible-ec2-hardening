@@ -12,8 +12,6 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
 
     steps:
       - name: Write SSH key
@@ -28,12 +26,4 @@ jobs:
 
       - name: Deploy on bastion
         run: |
-          ssh -i ~/.ssh/bastion_key "${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}" "bash -s" <<EOF
-          set -e
-          cd ~/ansible-project
-          git fetch origin main
-          git reset --hard origin/main
-          printf '%s\n' "$VAULT_PASSWORD" > vault_pass.txt
-          ansible-playbook -i inventory/aws_ec2.yml site.yml --limit 'role_web:&env_prod' --vault-password-file vault_pass.txt
-          rm -f vault_pass.txt
-          EOF
+          ssh -i ~/.ssh/bastion_key "${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}" "set -e; cd ~/ansible-project; git fetch origin main; git reset --hard origin/main; printf '%s\n' '${{ secrets.ANSIBLE_VAULT_PASSWORD }}' > vault_pass.txt; ANSIBLE_INVENTORY=inventory/aws_ec2.yml ansible-playbook site.yml --limit 'role_web:\&env_prod' --vault-password-file vault_pass.txt; rm -f vault_pass.txt"
