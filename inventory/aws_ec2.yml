@@ -6,6 +6,12 @@ regions:
 filters:
   instance-state-name: running
 
+keyed_groups:
+  - prefix: env
+    key: tags.env
+  - prefix: role
+    key: tags.role
+
 hostnames:
   - private-ip-address
 
