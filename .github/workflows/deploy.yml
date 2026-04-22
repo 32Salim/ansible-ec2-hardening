@@ -31,5 +31,5 @@ jobs:
             cd ~/ansible-project
             git fetch origin main
             git reset --hard origin/main
-            ansible-playbook -i inventory/aws_ec2.yml site.yml --limit role_web:&env_prod
+            ansible-playbook -i inventory/aws_ec2.yml site.yml --limit "role_web:&env_prod"
           EOF
