@@ -31,5 +31,6 @@ jobs:
             cd ~/ansible-project
             git fetch origin main
             git reset --hard origin/main
-            ansible-playbook -i inventory/aws_ec2.yml site.yml --limit "role_web:&env_prod"
+            echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
+            ANSIBLE_INVENTORY=inventory/aws_ec2.yml ansible-playbook site.yml --limit "role_web:&env_prod" --vault-password-file vault_pass.txt
           EOF
