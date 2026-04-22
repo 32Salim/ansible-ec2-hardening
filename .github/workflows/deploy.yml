@@ -29,6 +29,7 @@ jobs:
           ssh -i ~/.ssh/bastion_key "${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}" << 'EOF'
             set -e
             cd ~/ansible-project
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             ansible-playbook site.yml --limit 'role_web:&env_prod'
           EOF
